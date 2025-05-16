@@ -7,7 +7,7 @@ const pcsController = {
         const cleanModelo = nombre.replace(/\s+/g, '').toUpperCase();
         const id_pc = `${cleanMarca}_${cleanModelo}_${Date.now()}`
         db.query(
-            'INSERT INTO PCS (id_pc, nombre, marca, procesador, ram, almacenamiento, gpu, sistema_operativo, precio, stock, fecha_ingreso, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO pcs (id_pc, nombre, marca, procesador, ram, almacenamiento, gpu, sistema_operativo, precio, stock, fecha_ingreso, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [id_pc, nombre, marca, procesador, ram, almacenamiento, gpu, sistema_operativo, precio, stock, fecha_ingreso, estado],
             (err, results) => {
                 if (err) return res.status(500).json({ message: 'Error en el servidor', details: err });
@@ -24,7 +24,7 @@ const pcsController = {
     },
 
     getAvailablePcs: (req, res) => {
-        db.query('SELECT * FROM PCS WHERE estado = 1', (err, results) => {
+        db.query('SELECT * FROM pcs WHERE estado = 1', (err, results) => {
             if (err) return res.status(500).json({ message: 'Error en el servidor', details: err });
             res.status(200).json(results);
         });
@@ -35,7 +35,7 @@ const pcsController = {
         const { nombre, marca, procesador, ram, almacenamiento, gpu, sistema_operativo, precio, stock, fecha_ingreso } = req.body;
         
         const query = `
-            UPDATE PCS SET 
+            UPDATE pcs SET 
                 nombre = COALESCE(?, nombre),
                 marca = COALESCE(?, marca),
                 procesador = COALESCE(?, procesador),
@@ -58,7 +58,7 @@ const pcsController = {
 
     deletePc: (req, res) => {
         const { id } = req.params;
-        db.query('DELETE FROM PCS WHERE id = ?', [id], (err, results) => {
+        db.query('DELETE FROM pcs WHERE id = ?', [id], (err, results) => {
             if (err) return res.status(500).json({ message: 'Error en el servidor', details: err });
             if (results.affectedRows === 0) return res.status(404).json({ message: 'PC no encontrada' });
             res.status(200).json({ message: 'PC eliminada correctamente' });
@@ -68,7 +68,7 @@ const pcsController = {
     togglePcState: (req, res) => {
         const { id } = req.params;
         const { estado } = req.body;
-        db.query('UPDATE PCS SET estado = ? WHERE id = ?', [estado, id], (err, results) => {
+        db.query('UPDATE pcs SET estado = ? WHERE id = ?', [estado, id], (err, results) => {
             if (err) return res.status(500).json({ message: 'Error en el servidor', details: err });
             if (results.affectedRows === 0) return res.status(404).json({ message: 'PC no encontrada' });
             res.status(200).json({ message: `PC ${estado ? 'habilitada' : 'deshabilitada'}`, estado });
@@ -77,7 +77,7 @@ const pcsController = {
 
     getPcById: (req, res) => {
         const { id } = req.params;
-        db.query('SELECT * FROM PCS WHERE id = ?', [id], (err, results) => {
+        db.query('SELECT * FROM pcs WHERE id = ?', [id], (err, results) => {
             if (err) return res.status(500).json({ message: 'Error en el servidor', details: err });
             if (results.length === 0) return res.status(404).json({ message: 'PC no encontrada' });
             res.status(200).json(results[0]);
